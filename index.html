@@ -28,7 +28,7 @@
             box-shadow: 0 0 5px #00ffff, inset 0 0 5px #00ffff;
             transition: all 0.3s ease;
         }
-        .futuristic-btn:hover {
+        .futuristic-btn:hover:not(:disabled) {
             background-color: #00ffff;
             color: #0a0a1a;
             box-shadow: 0 0 15px #00ffff, inset 0 0 10px #00ffff;
@@ -111,21 +111,33 @@
                 <div class="glass-panel p-6 rounded-2xl">
                     <h2 class="font-orbitron text-xl text-cyan-300 border-b border-cyan-500/20 pb-2 mb-4">Montar Look</h2>
                     <div class="grid grid-cols-2 gap-4">
-                        <div id="upload-top" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
-                            <span class="text-3xl">👕</span> <p class="text-xs mt-1 text-cyan-400">Parte de Cima</p>
-                            <input type="file" class="hidden" data-part="top" accept="image/*">
+                        <div class="flex flex-col">
+                            <div id="upload-top" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
+                                <span class="text-3xl">👕</span> <p class="text-xs mt-1 text-cyan-400">Parte de Cima</p>
+                                <input type="file" class="hidden" data-part="top" accept="image/*">
+                            </div>
+                            <input type="text" id="texture-top" placeholder="Tecido (ex: Algodão)" class="form-input text-xs w-full rounded-md p-1 mt-2 hidden">
                         </div>
-                        <div id="upload-bottom" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
-                            <span class="text-3xl">👖</span> <p class="text-xs mt-1 text-cyan-400">Parte de Baixo</p>
-                             <input type="file" class="hidden" data-part="bottom" accept="image/*">
+                        <div class="flex flex-col">
+                           <div id="upload-bottom" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
+                                <span class="text-3xl">👖</span> <p class="text-xs mt-1 text-cyan-400">Parte de Baixo</p>
+                                 <input type="file" class="hidden" data-part="bottom" accept="image/*">
+                            </div>
+                            <input type="text" id="texture-bottom" placeholder="Tecido (ex: Jeans)" class="form-input text-xs w-full rounded-md p-1 mt-2 hidden">
                         </div>
-                        <div id="upload-shoes" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
-                            <span class="text-3xl">👟</span> <p class="text-xs mt-1 text-cyan-400">Calçados</p>
-                             <input type="file" class="hidden" data-part="shoes" accept="image/*">
+                        <div class="flex flex-col">
+                            <div id="upload-shoes" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
+                                <span class="text-3xl">👟</span> <p class="text-xs mt-1 text-cyan-400">Calçados</p>
+                                 <input type="file" class="hidden" data-part="shoes" accept="image/*">
+                            </div>
+                            <input type="text" id="texture-shoes" placeholder="Material (ex: Couro)" class="form-input text-xs w-full rounded-md p-1 mt-2 hidden">
                         </div>
-                        <div id="upload-accessories" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
-                           <span class="text-3xl">🧢</span> <p class="text-xs mt-1 text-cyan-400">Acessórios</p>
-                           <input type="file" class="hidden" data-part="accessories" accept="image/*">
+                        <div class="flex flex-col">
+                           <div id="upload-accessories" class="upload-box rounded-lg flex flex-col items-center justify-center h-32 cursor-pointer p-2 text-center">
+                               <span class="text-3xl">🧢</span> <p class="text-xs mt-1 text-cyan-400">Acessórios</p>
+                               <input type="file" class="hidden" data-part="accessories" accept="image/*">
+                            </div>
+                            <input type="text" id="texture-accessories" placeholder="Material (ex: Metal)" class="form-input text-xs w-full rounded-md p-1 mt-2 hidden">
                         </div>
                     </div>
                 </div>
@@ -233,12 +245,23 @@
                     <img id="generatedImage" src="" alt="Imagem gerada pela IA" class="hidden w-full h-full object-cover">
                 </div>
                  <footer class="mt-6 text-center flex items-center justify-center gap-4">
-                    <button id="generateButton" class="futuristic-btn text-cyan-300 font-bold py-3 px-8 rounded-lg text-lg font-orbitron disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-cyan-300" disabled>
+                    <button id="generateButton" class="futuristic-btn text-cyan-300 font-bold py-3 px-8 rounded-lg text-lg font-orbitron disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         GERAR MODELO
                     </button>
-                     <button id="saveLookBtn" class="futuristic-btn hidden bg-cyan-500/20 text-cyan-300 font-bold py-3 px-6 rounded-lg text-base">
-                        Salvar Look
+                    <button id="completeLookBtn" class="futuristic-btn text-cyan-300 font-bold py-3 px-8 rounded-lg text-lg font-orbitron disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                        COMPLETAR LOOK
                     </button>
+                    <div id="resultActions" class="flex items-center gap-2 hidden">
+                         <button id="saveLookBtn" class="futuristic-btn bg-cyan-500/20 text-cyan-300 font-bold p-3 rounded-lg text-base" title="Salvar Look">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                         </button>
+                         <button id="downloadBtn" class="futuristic-btn bg-cyan-500/20 text-cyan-300 font-bold p-3 rounded-lg text-base" title="Baixar Imagem">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                         </button>
+                         <button id="shareBtn" class="futuristic-btn bg-cyan-500/20 text-cyan-300 font-bold p-3 rounded-lg text-base" title="Compartilhar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                         </button>
+                    </div>
                 </footer>
             </div>
         </div>
@@ -273,6 +296,7 @@
     <script>
         // --- DOM Elements ---
         const generateButton = document.getElementById('generateButton');
+        const completeLookBtn = document.getElementById('completeLookBtn');
         const generatedImage = document.getElementById('generatedImage');
         const loader = document.getElementById('loader');
         const placeholderText = document.getElementById('placeholderText');
@@ -284,7 +308,10 @@
         const closeGalleryBtn = document.getElementById('closeGalleryBtn');
         const galleryGrid = document.getElementById('galleryGrid');
         const emptyGalleryText = document.getElementById('emptyGalleryText');
+        const resultActions = document.getElementById('resultActions');
         const saveLookBtn = document.getElementById('saveLookBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
 
         const uploadBoxes = {
             top: document.getElementById('upload-top'),
@@ -293,11 +320,17 @@
             accessories: document.getElementById('upload-accessories'),
             model: document.getElementById('upload-model'),
         };
+        const textureInputs = {
+            top: document.getElementById('texture-top'),
+            bottom: document.getElementById('texture-bottom'),
+            shoes: document.getElementById('texture-shoes'),
+            accessories: document.getElementById('texture-accessories'),
+        };
         const fileInputs = document.querySelectorAll('input[type="file"]');
         const modelSourceContainer = document.getElementById('modelSource');
         const aiControls = document.getElementById('ai-controls');
         const photoModelControls = document.getElementById('photo-model-controls');
-        // Novos controles da IA
+        // AI controls
         const sceneSelect = document.getElementById('scene');
         const bodyTypeContainer = document.getElementById('bodyType');
         const modelPoseContainer = document.getElementById('modelPose');
@@ -320,10 +353,13 @@
         });
         fileInputs.forEach(input => input.addEventListener('change', (event) => handleFileUpload(event, input.dataset.part)));
         closeModalBtn.addEventListener('click', () => errorModal.classList.add('hidden'));
-        generateButton.addEventListener('click', generateModel);
+        generateButton.addEventListener('click', () => generateModel(false));
+        completeLookBtn.addEventListener('click', () => generateModel(true));
         galleryBtn.addEventListener('click', openGallery);
         closeGalleryBtn.addEventListener('click', () => galleryModal.classList.add('hidden'));
         saveLookBtn.addEventListener('click', saveLook);
+        downloadBtn.addEventListener('click', downloadLook);
+        shareBtn.addEventListener('click', shareLook);
         
         modelSourceContainer.addEventListener('click', (e) => {
             if (e.target.tagName !== 'BUTTON') return;
@@ -341,7 +377,10 @@
             checkIfReadyToGenerate();
         });
         
-        // --- Segmented Controls ---
+        // --- Segmented Controls Setup ---
+        [modelTypeContainer, modelViewContainer, modelGenderContainer, skinToneContainer, bodyTypeContainer, modelPoseContainer].forEach(container => {
+             if(container) setupSegmentedControl(container);
+        });
         function setupSegmentedControl(container) {
             container.addEventListener('click', (e) => {
                 if (e.target.tagName === 'BUTTON') {
@@ -350,12 +389,6 @@
                 }
             });
         }
-        setupSegmentedControl(modelTypeContainer);
-        setupSegmentedControl(modelViewContainer);
-        setupSegmentedControl(modelGenderContainer);
-        setupSegmentedControl(skinToneContainer);
-        setupSegmentedControl(bodyTypeContainer);
-        setupSegmentedControl(modelPoseContainer);
 
         // --- Core Functions ---
         function handleFileUpload(event, part) {
@@ -367,11 +400,9 @@
             reader.onload = (e) => {
                 resizeAndEncode(file, part, (base64, mimeType) => {
                     uploadedLook[part] = { data: base64, mimeType: mimeType };
-                    box.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-full object-contain rounded-lg">
-                        <button class="remove-btn" data-part="${part}">X</button>
-                    `;
+                    box.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded-lg"><button class="remove-btn" data-part="${part}">X</button>`;
                     box.querySelector('.remove-btn').addEventListener('click', (ev) => removeImage(ev, part));
+                    if(textureInputs[part]) textureInputs[part].classList.remove('hidden');
                     checkIfReadyToGenerate();
                 });
             };
@@ -390,7 +421,11 @@
                 model: '<span class="text-3xl">👤</span> <p class="text-sm mt-1 text-cyan-400">Foto do Modelo</p>'
             };
             box.innerHTML = originalContent[part] + `<input type="file" class="hidden" data-part="${part}" accept="image/*">`;
-             box.querySelector('input[type="file"]').addEventListener('change', (e) => handleFileUpload(e, part));
+            box.querySelector('input[type="file"]').addEventListener('change', (e) => handleFileUpload(e, part));
+            if(textureInputs[part]) {
+                textureInputs[part].classList.add('hidden');
+                textureInputs[part].value = '';
+            }
             checkIfReadyToGenerate();
         }
 
@@ -402,13 +437,9 @@
                     const canvas = document.createElement('canvas');
                     const MAX_DIMENSION = 1024;
                     let { width, height } = img;
-                    if (width > height) {
-                        if (width > MAX_DIMENSION) { height *= MAX_DIMENSION / width; width = MAX_DIMENSION; }
-                    } else {
-                        if (height > MAX_DIMENSION) { width *= MAX_DIMENSION / height; height = MAX_DIMENSION; }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
+                    if (width > height) { if (width > MAX_DIMENSION) { height *= MAX_DIMENSION / width; width = MAX_DIMENSION; } } 
+                    else { if (height > MAX_DIMENSION) { width *= MAX_DIMENSION / height; height = MAX_DIMENSION; } }
+                    canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     const mimeType = file.type || 'image/jpeg';
@@ -421,28 +452,40 @@
         }
 
         function checkIfReadyToGenerate() {
-            const hasAtLeastOnePiece = uploadedLook.top || uploadedLook.bottom || uploadedLook.shoes || uploadedLook.accessories;
+            const uploadedPiecesCount = Object.values(uploadedLook).filter(p => p !== null && !p.isModel).length;
+            const hasAtLeastOnePiece = uploadedPiecesCount > 0;
             const modelSource = modelSourceContainer.querySelector('.active').dataset.source;
-            let isReady = false;
+
+            let isReadyForGenerate = false;
+            let isReadyForComplete = false;
 
             if (modelSource === 'ai') {
-                isReady = hasAtLeastOnePiece;
+                isReadyForGenerate = hasAtLeastOnePiece;
+                isReadyForComplete = hasAtLeastOnePiece && uploadedPiecesCount < 4;
             } else { // photo
-                isReady = hasAtLeastOnePiece && uploadedLook.model;
+                isReadyForGenerate = hasAtLeastOnePiece && uploadedLook.model;
+                isReadyForComplete = false; // "Complete look" doesn't apply to user photos
             }
-            generateButton.disabled = !isReady;
+
+            generateButton.disabled = !isReadyForGenerate;
+            completeLookBtn.disabled = !isReadyForComplete;
+            
+            generateButton.classList.toggle('hidden', isReadyForComplete);
+            completeLookBtn.classList.toggle('hidden', !isReadyForComplete);
         }
         
-        function buildPrompt() {
-            const modelSource = modelSourceContainer.querySelector('.active').dataset.source;
-            const clothingParts = [
-                uploadedLook.top ? "a peça de cima da primeira imagem de roupa" : null,
-                uploadedLook.bottom ? "a parte de baixo da segunda imagem de roupa" : null,
-                uploadedLook.shoes ? "os calçados da terceira imagem de roupa" : null,
-                uploadedLook.accessories ? "o acessório da quarta imagem de roupa" : null
-            ].filter(Boolean);
-            const lookDescription = clothingParts.join(', ');
+        function getClothingDescription(partName, textureValue) {
+            const nameMap = { top: "peça de cima", bottom: "parte de baixo", shoes: "calçados", accessories: "acessório" };
+            const textureInfo = textureValue ? ` (tecido: ${textureValue})` : '';
+            return `${nameMap[partName]}${textureInfo}`;
+        }
 
+        function buildPrompt(isCompletingLook) {
+            const modelSource = modelSourceContainer.querySelector('.active').dataset.source;
+            const providedParts = ['top', 'bottom', 'shoes', 'accessories'].filter(p => uploadedLook[p]);
+            const lookDescription = providedParts.map((p, i) => `${getClothingDescription(p, textureInputs[p].value)} da imagem de roupa #${i+1}`).join(', ');
+
+            // AI Model Generation
             if (modelSource === 'ai') {
                 const scene = sceneSelect.value;
                 const bodyType = bodyTypeContainer.querySelector('.active').dataset.value;
@@ -453,65 +496,54 @@
                 const skinTone = skinToneContainer.querySelector('.active').dataset.value;
                 const age = ageInput.value;
                 const height = heightSelect.value;
-                return `Crie uma foto ultra-realista de um(a) modelo ${modelGender} profissional ${modelType}, visto(a) de ${modelView}.
-                Características do modelo: pele ${skinTone}, corpo ${bodyType}, aproximadamente ${age} anos de idade, e de estatura ${height}.
-                O modelo está ${modelPose} ${scene}.
-                Ele(a) deve vestir o look completo formado por: ${lookDescription}.
-                O foco principal deve ser mostrar claramente as roupas e acessórios da perspectiva de ${modelView}. A imagem deve ser de alta definição e fotorrealística.`;
-            } else { // photo
+                
+                const modelCharacteristics = `Características do modelo: ${modelGender}, pele ${skinTone}, corpo ${bodyType}, aproximadamente ${age} anos de idade, e de estatura ${height}. O modelo está ${modelPose} ${scene} e é um(a) modelo profissional ${modelType}, visto(a) de ${modelView}.`;
+
+                if (isCompletingLook) {
+                    const missingParts = ['top', 'bottom', 'shoes', 'accessories'].filter(p => !uploadedLook[p]);
+                    const missingDescription = missingParts.map(p => getClothingDescription(p, '')).join(', ');
+                    return `Você é um personal stylist. O usuário forneceu ${lookDescription}. Por favor, complete o look de forma estilosa e coesa, gerando as seguintes peças que faltam: ${missingDescription}. O resultado final deve ser uma foto ultra-realista de um(a) modelo vestindo o look completo (peças fornecidas + peças geradas). ${modelCharacteristics}. A imagem deve ser de alta definição e fotorrealística.`;
+                } else {
+                    return `Crie uma foto ultra-realista de um(a) modelo vestindo o look completo formado por: ${lookDescription}. ${modelCharacteristics}. O foco principal deve ser mostrar claramente as roupas e acessórios da perspectiva de ${modelView}. A imagem deve ser de alta definição e fotorrealística.`;
+                }
+            } 
+            // User Photo Model
+            else { 
                 return `Esta é uma tarefa de edição de imagem. A última imagem na sequência é a foto de uma pessoa (o/a modelo). As imagens anteriores são peças de roupa. Vista a pessoa da última imagem com as seguintes peças: ${lookDescription}. É absolutamente crucial manter o rosto, o corpo, a pose e o fundo da foto original do(a) modelo, apenas trocando a roupa de forma realista. O resultado deve ser fotorrealístico.`;
             }
         }
 
-        async function generateModel() {
+        async function generateModel(isCompletingLook) {
             setLoadingState(true);
-            saveLookBtn.classList.add('hidden');
 
-            const userPrompt = buildPrompt();
-            const clothingImageParts = [uploadedLook.top, uploadedLook.bottom, uploadedLook.shoes, uploadedLook.accessories]
-                .filter(p => p !== null)
-                .map(p => ({ inlineData: { mimeType: p.mimeType, data: p.data } }));
+            const userPrompt = buildPrompt(isCompletingLook);
+            const clothingImageParts = ['top', 'bottom', 'shoes', 'accessories']
+                .filter(p => uploadedLook[p])
+                .map(p => ({ inlineData: { mimeType: uploadedLook[p].mimeType, data: uploadedLook[p].data } }));
             
             let allImageParts = [...clothingImageParts];
             if (modelSourceContainer.querySelector('.active').dataset.source === 'photo' && uploadedLook.model) {
                 allImageParts.push({ inlineData: { mimeType: uploadedLook.model.mimeType, data: uploadedLook.model.data } });
             }
-
-            if (clothingImageParts.length === 0) {
-                showErrorModal('Por favor, envie a imagem de pelo menos uma peça de roupa.');
-                setLoadingState(false);
-                return;
-            }
             
             const apiKey = "AIzaSyAKZ1PNDyFMuaXUhot54PlnFxg4Oyc7hig";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userPrompt }, ...allImageParts] }],
-                generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },
-            };
+            const payload = { contents: [{ parts: [{ text: userPrompt }, ...allImageParts] }], generationConfig: { responseModalities: ['TEXT', 'IMAGE'] } };
 
             try {
-                const result = await fetchWithBackoff(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
+                const result = await fetchWithBackoff(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (result.error) throw new Error(`API Error: ${result.error.message}`);
-                
                 const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
                 
                 if (base64Data) {
                     generatedImage.src = `data:image/png;base64,${base64Data}`;
                     generatedImage.classList.remove('hidden');
                     placeholderText.classList.add('hidden');
-                    saveLookBtn.classList.remove('hidden');
+                    resultActions.classList.remove('hidden');
                 } else {
                      const errorText = result?.candidates?.[0]?.content?.parts?.[0]?.text || "A resposta da API não continha uma imagem ou retornou um formato inesperado.";
                     throw new Error(errorText);
                 }
-
             } catch (error) {
                 console.error('Erro detalhado:', error);
                 showErrorModal(error.message);
@@ -534,16 +566,16 @@
                 }
                 return await response.json();
             } catch (error) {
-                if (retries > 0) {
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return fetchWithBackoff(url, options, retries - 1, delay * 2);
-                }
+                if (retries > 0) { await new Promise(resolve => setTimeout(resolve, delay)); return fetchWithBackoff(url, options, retries - 1, delay * 2); }
                 throw error;
             }
         }
 
         function setLoadingState(isLoading) {
             generateButton.disabled = isLoading;
+            completeLookBtn.disabled = isLoading;
+            resultActions.classList.add('hidden');
+
             if (isLoading) {
                 loader.classList.remove('hidden');
                 placeholderText.classList.add('hidden');
@@ -558,53 +590,69 @@
             errorModal.classList.remove('hidden');
         }
 
-        // --- Gallery Functions ---
+        // --- Result Actions (Save, Download, Share) ---
         function saveLook() {
             const looks = JSON.parse(localStorage.getItem('savedLooks') || '[]');
-            looks.unshift(generatedImage.src); // Adiciona no início
+            looks.unshift(generatedImage.src);
             localStorage.setItem('savedLooks', JSON.stringify(looks));
-            saveLookBtn.textContent = "Salvo!";
+            const icon = saveLookBtn.innerHTML;
+            saveLookBtn.innerHTML = "Salvo!";
             saveLookBtn.disabled = true;
             setTimeout(() => {
-                saveLookBtn.textContent = "Salvar Look";
+                saveLookBtn.innerHTML = icon;
                 saveLookBtn.disabled = false;
-                saveLookBtn.classList.add('hidden');
             }, 2000);
+        }
+
+        function downloadLook() {
+            const link = document.createElement('a');
+            link.href = generatedImage.src;
+            link.download = 'look_virtual.png';
+            link.click();
+        }
+        
+        async function shareLook() {
+            try {
+                const response = await fetch(generatedImage.src);
+                const blob = await response.blob();
+                const file = new File([blob], 'look_virtual.png', { type: blob.type });
+
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        title: 'Meu Look Virtual',
+                        text: 'Criei este look incrível com o Provador Virtual com IA!',
+                        files: [file],
+                    });
+                } else {
+                    showErrorModal('Seu navegador não suporta o compartilhamento de arquivos. Tente baixar a imagem primeiro.');
+                }
+            } catch (error) {
+                console.error('Erro ao compartilhar:', error);
+                showErrorModal('Não foi possível compartilhar a imagem. Tente baixar primeiro.');
+            }
         }
 
         function openGallery() {
             const looks = JSON.parse(localStorage.getItem('savedLooks') || '[]');
             galleryGrid.innerHTML = '';
-            if (looks.length === 0) {
-                emptyGalleryText.classList.remove('hidden');
-            } else {
-                emptyGalleryText.classList.add('hidden');
-                looks.forEach((lookSrc, index) => {
-                    const lookElement = document.createElement('div');
-                    lookElement.className = 'relative group glass-panel rounded-lg overflow-hidden';
-                    lookElement.innerHTML = `
-                        <img src="${lookSrc}" class="w-full h-full object-cover aspect-square">
-                        <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button data-index="${index}" class="delete-look-btn futuristic-btn bg-red-500/50 border-red-500 text-white font-bold py-2 px-4 rounded-lg">Excluir</button>
-                        </div>
-                    `;
-                    galleryGrid.appendChild(lookElement);
-                });
-            }
-            galleryModal.classList.remove('hidden');
-
-            document.querySelectorAll('.delete-look-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    deleteLook(parseInt(e.target.dataset.index));
-                });
+            emptyGalleryText.classList.toggle('hidden', looks.length > 0);
+            
+            looks.forEach((lookSrc, index) => {
+                const lookElement = document.createElement('div');
+                lookElement.className = 'relative group glass-panel rounded-lg overflow-hidden';
+                lookElement.innerHTML = `<img src="${lookSrc}" class="w-full h-full object-cover aspect-square"><div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><button data-index="${index}" class="delete-look-btn futuristic-btn bg-red-500/50 border-red-500 text-white font-bold py-2 px-4 rounded-lg">Excluir</button></div>`;
+                galleryGrid.appendChild(lookElement);
             });
+            
+            galleryModal.classList.remove('hidden');
+            document.querySelectorAll('.delete-look-btn').forEach(button => button.addEventListener('click', (e) => deleteLook(parseInt(e.target.dataset.index))));
         }
 
         function deleteLook(indexToDelete) {
             let looks = JSON.parse(localStorage.getItem('savedLooks') || '[]');
             looks.splice(indexToDelete, 1);
             localStorage.setItem('savedLooks', JSON.stringify(looks));
-            openGallery(); // Recarrega a galeria
+            openGallery();
         }
     </script>
 </body>
